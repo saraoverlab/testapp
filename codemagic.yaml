@@ -1,0 +1,20 @@
+workflows:
+  main:
+    name: Main Workflow
+    environment:
+      groups:
+      - test
+    scripts:
+      # Add your build and test scripts here
+      - name: Deploy to Firebase Distribution
+        script: |
+          # Install Firebase CLI
+          npm install -g firebase-tools
+
+          # Authenticate Firebase CLI with the service account key
+          echo "$FIREBASE_SERVICE_ACCOUNT_KEY" | base64 --decode > ./firebase_key.json
+          firebase login --no-localhost --no-confirmation --service-account ./firebase_key.json
+
+          # Build and deploy to Firebase Distribution
+          flutter build apk # Replace with your build command
+          firebase appdistribution:distribute ./build/app/outputs/flutter-apk/app-release.apk # Replace with the path to your APK
