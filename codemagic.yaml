@@ -41,13 +41,7 @@ workflows:
           # Build and deploy to Firebase Distribution
           flutter build apk # Replace with your build command
           firebase appdistribution:distribute ./build/app/outputs/flutter-apk/app-release.apk # Replace with the path to your APK
-      artifacts:
-      - build/**/outputs/**/*.aab
-    #publishing:
-      #google_play:
-        #credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT
-        #track: internal
-        #submit_as_draft: true
+
 
 
   android-workflow:
