@@ -24,19 +24,31 @@ workflows:
           storeFile=/tmp/keystore.jks
           EOF
       - name: Build AAB
+
         script: |
           cd $CM_BUILD_DIR
           flutter packages pub get
           flutter build appbundle --build-number=$PROJECT_BUILD_NUMBER
-    artifacts:
+      - name: Deploy to Firebase Distribution
+        script: |
+          # Install Firebase CLI
+          npm install -g firebase-tools
+  
+          # Authenticate Firebase CLI with the service account key
+          echo "$FIREBASE_SERVICE_ACCOUNT_KEY" | base64 --decode > ./firebase_key.json
+          firebase login --no-localhost --no-confirmation --service-account ./firebase_key.json
+  
+          # Build and deploy to Firebase Distribution
+          flutter build apk # Replace with your build command
+          firebase appdistribution:distribute ./build/app/outputs/flutter-apk/app-release.apk # Replace with the path to your APK
+      artifacts:
       - build/**/outputs/**/*.aab
-    publishing:
-      google_play:
-        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT
-        track: internal
-        submit_as_draft: true
-      firebase:
-        firebase_service_account: $GOOGLE_PLAY_SERVICE_ACCOUNT
+    #publishing:
+      #google_play:
+        #credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT
+        #track: internal
+        #submit_as_draft: true
+
 
   android-workflow:
     name: Android Workflow
